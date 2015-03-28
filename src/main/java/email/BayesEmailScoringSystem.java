@@ -10,7 +10,6 @@
  */
 package email;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -68,6 +67,9 @@ public class BayesEmailScoringSystem {
 			try {
 				csvReader = new CSVReader(new FileReader(fileName));
 				
+				//Read headers
+				String[] foo = csvReader.readNext();
+				
 				for(String[] line : csvReader.readAll()) {
 					int spamMessages = Integer.valueOf(line[1]);
 					int realMessages = Integer.valueOf(line[2]);
@@ -91,17 +93,16 @@ public class BayesEmailScoringSystem {
 	}
 	
 	public void readGenericWords() {
-		BufferedReader bufferedReader = null;
+		CSVReader csvReader = null;
 		
 		try {
-			bufferedReader = new BufferedReader(new FileReader(GENERICWORD_FILE));
+			csvReader = new CSVReader(new FileReader(GENERICWORD_FILE));
 			
-			String line;
 			//Read headers
-			bufferedReader.readLine();
+			csvReader.readNext();
 			
-			while((line = bufferedReader.readLine()) != null) {
-				genericWords.add(line.replace("\n", ""));
+			for(String[] word : csvReader.readAll()) {
+			    genericWords.add(word[0]);
 			}
 		} catch(FileNotFoundException e) {
 			System.out.println("Could not find generic words file: " + GENERICWORD_FILE);
@@ -109,9 +110,9 @@ public class BayesEmailScoringSystem {
 		} catch(IOException e) {
 			e.printStackTrace();
 		} finally {
-			if(bufferedReader != null) {
+			if(csvReader != null) {
 				try {
-					bufferedReader.close();
+					csvReader.close();
 				} catch(IOException e) {
 					e.printStackTrace();
 				}
