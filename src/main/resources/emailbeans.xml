@@ -2,15 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
 	<bean id="bayesemailscoringsystem" name="bayesemailscoring" class="email.BayesEmailScoringSystem"/>
-	<!--  
+		
 	<bean id="emailspamalgorithm" name="bayesemailalgorithm" class="email.BayesEmailAlgorithm">
 		<constructor-arg name="scoringSystem" ref="bayesemailscoringsystem" type="email.BayesEmailScoringSystem"/>
-	-->
-	<!--  TEST ALGORITHM  -->
+	</bean>
+	
+		<!--  TEST ALGORITHM  
 	<bean id="emailspamalgorithm" name="bayesemailalgorithm" class="email.TestAlgo">
 		<constructor-arg name="scoringSystem" ref="bayesemailscoringsystem" type="email.BayesEmailScoringSystem"/>
-	
 	</bean>
+		-->
+		
 	<bean name="emailprobabilitycalculator" class="email.ProbabilityCalculator">
 		<constructor-arg name="algorithm" ref="emailspamalgorithm" type="email.SpamAlgorithm"/>
 	</bean>
