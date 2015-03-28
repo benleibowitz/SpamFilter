@@ -14,22 +14,5 @@ public class test {
 		Email e = new Email("Robert DeVaux", "Your account information", "Please update your account information");
 		System.out.println(probCalc.isSpam(e));
 		
-		Scanner s = new Scanner(System.in);
-		BayesEmailProbabilityTrainer t = (BayesEmailProbabilityTrainer)c.getBean("emailprobabilitytrainer");
-		//System.out.println(m.getBody());
-		/*
-		while(true) {
-			System.out.print("sender or @ to break:");
-			String se = s.nextLine();
-			System.out.print("subject:");
-			String sub = s.nextLine();
-			System.out.print("message:");
-			String mess = s.nextLine();
-			if(se.equals("@")) break;
-			t.train(new Email(se, sub, mess), false);
-		}
-		t.commit();
-		*/
-		
 	 }
 }
