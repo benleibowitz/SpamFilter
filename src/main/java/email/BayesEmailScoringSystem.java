@@ -11,8 +11,6 @@
 package email;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -21,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 public class BayesEmailScoringSystem {
 	private static final String BASE_URL = "src/main/resources/";
@@ -59,22 +60,18 @@ public class BayesEmailScoringSystem {
 		fileMap.put(SENDERMAP_FILE, senderProbabilityMap);
 		fileMap.put(SUBJECTMAP_FILE, subjectProbabilityMap);
 		
-		//TEST read CSV word file
-		//TODO - implement CSV reader class
 		for(String fileName : fileMap.keySet()) {
 			Map<String, int[]> wordCountMap = fileMap.get(fileName);
 			
-			BufferedReader br = null;
+			CSVReader csvReader = null;
+			
 			try {
-				br = new BufferedReader(new FileReader(fileName));
-				String line;
-				br.readLine();
+				csvReader = new CSVReader(new FileReader(fileName));
 				
-				while((line = br.readLine()) != null) {
-					String[] ar = line.split(",");
-					int spamMessages = Integer.valueOf(ar[1]);
-					int realMessages = Integer.valueOf(ar[2]);
-					wordCountMap.put(ar[0], new int[]{spamMessages, realMessages});
+				for(String[] line : csvReader.readAll()) {
+					int spamMessages = Integer.valueOf(line[1]);
+					int realMessages = Integer.valueOf(line[2]);
+					wordCountMap.put(line[0], new int[]{spamMessages, realMessages});
 				}
 				
 			} catch(FileNotFoundException e) {
@@ -82,9 +79,9 @@ public class BayesEmailScoringSystem {
 			} catch(IOException e) {
 				e.printStackTrace();
 			} finally {
-				if(br != null) {
+				if(csvReader != null) {
 					try {
-						br.close();
+						csvReader.close();
 					} catch(IOException e) {
 						e.printStackTrace();
 					}
@@ -107,7 +104,7 @@ public class BayesEmailScoringSystem {
 				genericWords.add(line.replace("\n", ""));
 			}
 		} catch(FileNotFoundException e) {
-			System.out.println("Could not read generic words file: " + GENERICWORD_FILE);
+			System.out.println("Could not find generic words file: " + GENERICWORD_FILE);
 			e.printStackTrace();
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -126,28 +123,30 @@ public class BayesEmailScoringSystem {
 	    
 		for(String fileName : fileMap.keySet()) {
 			//Write new word map to file
-			BufferedWriter bufferedWriter = null;
+			CSVWriter csvWriter = null;
+			
 			Map<String, int[]> wordCountMap = fileMap.get(fileName);
                     
 			try {
-				bufferedWriter = new BufferedWriter(new FileWriter(
-						new File(fileName)));
+				csvWriter = new CSVWriter(new FileWriter(fileName));
                 
 				//Write headers
-				bufferedWriter.write("Word,SpamMessages,RealMessages\n");
+				csvWriter.writeNext(new String[]{"Word", "SpamMessages", "RealMessages"});
                 
 				for(String word : wordCountMap.keySet()) {
-                    
-					bufferedWriter.write(word + "," + wordCountMap.get(word)[0]
-							+ "," + wordCountMap.get(word)[1] + "\n" );
+					csvWriter.writeNext(new String[]{word, String.valueOf(wordCountMap.get(word)[0]),
+					        String.valueOf(wordCountMap.get(word)[1])});
 				}
                 
-			} catch(IOException e) {
-				e.printStackTrace();
-			}  finally {
-				if(bufferedWriter != null) {
+			} catch(FileNotFoundException e) {
+	            System.out.println("Could not find word mapping file: " + fileName);
+	            e.printStackTrace();
+	        } catch(IOException e) {
+	            e.printStackTrace();
+	        } finally {
+				if(csvWriter != null) {
 					try {
-						bufferedWriter.close();
+						csvWriter.close();
 					} catch(IOException e) {
 						e.printStackTrace();
 					}
