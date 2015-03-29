@@ -40,9 +40,9 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
 		if(email == null)
 			throw new IllegalArgumentException("Message cannot be null");
 		
-		double weightedProbability = BODY_WEIGHT * processText(email.getBody(), scoringSystem.getBodyProbabilityMap())
-				+ SENDER_WEIGHT * processText(email.getSender(), scoringSystem.getSenderProbabilityMap())
-				+ SUBJECT_WEIGHT * processText(email.getSubject(), scoringSystem.getSubjectProbabilityMap());
+		double weightedProbability = BODY_WEIGHT * processText(email.getBody(), scoringSystem.getBodyCountMap())
+				+ SENDER_WEIGHT * processText(email.getSender(), scoringSystem.getSenderCountMap())
+				+ SUBJECT_WEIGHT * processText(email.getSubject(), scoringSystem.getSubjectCountMap());
 		
 		System.out.println(weightedProbability);
 		

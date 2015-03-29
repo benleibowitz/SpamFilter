@@ -23,9 +23,9 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 		if(email == null)
 			throw new IllegalArgumentException("Message cannot be null");
 		
-		train(email.getBody(), spam, scoringSystem.getBodyProbabilityMap());
-		train(email.getSender(), spam, scoringSystem.getSenderProbabilityMap());
-		train(email.getSubject(), spam, scoringSystem.getSubjectProbabilityMap());
+		train(email.getBody(), spam, scoringSystem.getBodyCountMap());
+		train(email.getSender(), spam, scoringSystem.getSenderCountMap());
+		train(email.getSubject(), spam, scoringSystem.getSubjectCountMap());
 	}
 	
 	private void train(String text, boolean spam, Map<String, int[]> wordCountMap) {

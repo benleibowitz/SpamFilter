@@ -30,12 +30,12 @@ public class BayesEmailScoringSystem {
 	private static final String GENERICWORD_FILE = BASE_URL + "genericWords.csv";
 	
 	//All words in map are lowercase.
-	//Probability map contains: <word, { P(word is in spam message), P(word is in real message) }>
-	private Map<String, int[]> bodyProbabilityMap;
-	private Map<String, int[]> subjectProbabilityMap;
-	private Map<String, int[]> senderProbabilityMap;
+	//Probability map contains: <word, { COUNT(spam messages containing word), COUNT(real messages containing word) }>
+	private Map<String, int[]> bodyCountMap;
+	private Map<String, int[]> subjectCountMap;
+	private Map<String, int[]> senderCountMap;
 	
-	//Contains <MappingFileURLString, respectiveProbabilityMap>
+	//Contains <MappingFileURLString, respectiveCountMap>
 	private Map<String, Map<String, int[]>> fileMap;
 	
 	//Contains words like "if" "and" "the" "I"
@@ -51,13 +51,13 @@ public class BayesEmailScoringSystem {
 		
 		fileMap = new HashMap<>();
     	
-		bodyProbabilityMap = new HashMap<>();
-		senderProbabilityMap = new HashMap<>();
-		subjectProbabilityMap = new HashMap<>();
+		bodyCountMap = new HashMap<>();
+		senderCountMap = new HashMap<>();
+		subjectCountMap = new HashMap<>();
 		
-		fileMap.put(BODYMAP_FILE, bodyProbabilityMap);
-		fileMap.put(SENDERMAP_FILE, senderProbabilityMap);
-		fileMap.put(SUBJECTMAP_FILE, subjectProbabilityMap);
+		fileMap.put(BODYMAP_FILE, bodyCountMap);
+		fileMap.put(SENDERMAP_FILE, senderCountMap);
+		fileMap.put(SUBJECTMAP_FILE, subjectCountMap);
 		
 		for(String fileName : fileMap.keySet()) {
 			Map<String, int[]> wordCountMap = fileMap.get(fileName);
@@ -157,28 +157,28 @@ public class BayesEmailScoringSystem {
         
 	}
   
-	public void setBodyProbabilityMap(Map<String, int[]> bodyProbabilityMap) {
-		this.bodyProbabilityMap = bodyProbabilityMap;
+	public void setBodyCountMap(Map<String, int[]> bodyCountMap) {
+		this.bodyCountMap = bodyCountMap;
 	}
   
-	public void setSenderProbabilityMap(Map<String, int[]> senderProbabilityMap) {
-		this.senderProbabilityMap = senderProbabilityMap;
+	public void setSenderCountMap(Map<String, int[]> senderCountMap) {
+		this.senderCountMap = senderCountMap;
 	}
   
-	public void setSubjectProbabilityMap(Map<String, int[]> subjectProbabilityMap) {
-		this.subjectProbabilityMap = subjectProbabilityMap;
+	public void setSubjectCountMap(Map<String, int[]> subjectCountMap) {
+		this.subjectCountMap = subjectCountMap;
 	}
   
-	public Map<String, int[]> getBodyProbabilityMap() {
-		return bodyProbabilityMap;
+	public Map<String, int[]> getBodyCountMap() {
+		return bodyCountMap;
 	}
   
-	public Map<String, int[]> getSenderProbabilityMap() {
-		return senderProbabilityMap;
+	public Map<String, int[]> getSenderCountMap() {
+		return senderCountMap;
 	}
   
-	public Map<String, int[]> getSubjectProbabilityMap() {
-		return subjectProbabilityMap;
+	public Map<String, int[]> getSubjectCountMap() {
+		return subjectCountMap;
 	}
 	
 	public List<String> getGenericWords() {
