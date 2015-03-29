@@ -47,13 +47,13 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 				
 				if(!(genericWords.contains(word))) {
 					
-					if(wordCountMap.containsKey(word)) {
+					if(wordCountMap.containsKey(word))
 						//If word found in map, increment
 						probs = wordCountMap.get(word);
-					} else {
+					else
 						//Word is not in map. Add it
 						probs = new int[]{0,0};					
-					}
+					
 					if(spam) 
 						probs[0] += 1;
 					else
