@@ -12,6 +12,6 @@ public class test {
 		Email email = new Email("Robert DeVaux", "Your account information", "Please update your account information");
 		System.out.println(probCalc.isSpam(email));
 		
-        ((ClassPathXmlApplicationContext)context).close();
+		((ClassPathXmlApplicationContext)context).close();
 	 }
 }
