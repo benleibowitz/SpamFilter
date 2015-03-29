@@ -68,7 +68,7 @@ public class BayesEmailScoringSystem {
 				csvReader = new CSVReader(new FileReader(fileName));
 				
 				//Read headers
-				String[] foo = csvReader.readNext();
+				csvReader.readNext();
 				
 				for(String[] line : csvReader.readAll()) {
 					int spamMessages = Integer.valueOf(line[1]);

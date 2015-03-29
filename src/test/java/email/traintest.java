@@ -29,5 +29,6 @@ public class traintest {
         
         trainer.commit();
 
+        ((ClassPathXmlApplicationContext)appContext).close();
     }
 }
