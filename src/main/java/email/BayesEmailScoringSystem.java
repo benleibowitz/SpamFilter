@@ -157,18 +157,6 @@ public class BayesEmailScoringSystem {
         
 	}
   
-	public void setBodyCountMap(Map<String, int[]> bodyCountMap) {
-		this.bodyCountMap = bodyCountMap;
-	}
-  
-	public void setSenderCountMap(Map<String, int[]> senderCountMap) {
-		this.senderCountMap = senderCountMap;
-	}
-  
-	public void setSubjectCountMap(Map<String, int[]> subjectCountMap) {
-		this.subjectCountMap = subjectCountMap;
-	}
-  
 	public Map<String, int[]> getBodyCountMap() {
 		return bodyCountMap;
 	}
