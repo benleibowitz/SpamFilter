@@ -39,6 +39,7 @@ public class Email {
 			.replaceAll("(?<=[a-z0-9])3(?=[a-z0-9])", "e")
 			.replaceAll("(?<=[a-z0-9])1(?=[a-z0-9])", "i")
 			.replaceAll("(?<=[a-z0-9])5(?=[a-z0-9])", "s")
+			.replaceAll("(?<=[a-z0-9])#(?=[a-z0-9])", "u")
 			.trim();
 	}
 	
