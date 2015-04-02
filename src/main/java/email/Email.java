@@ -29,6 +29,7 @@ public class Email {
 		
 		return shortened.replaceAll("-", " ")
 			.replaceAll("([.|_|*|^|$|#|@|!|-|+])\\1+", "$1")
+            .replaceAll("(?<=[a-z0-9])#(?=[a-z0-9])", "u")
 			.replaceAll("(?<=[A-Za-z]{2,})[^\\w^\\s](?=[A-Za-z]{1,})", " ")
 			.replaceAll("<br>|[^\\w^\\s]|_", "")
 			.replaceAll("[\\s]{2,}", " ")
@@ -39,6 +40,7 @@ public class Email {
 			.replaceAll("(?<=[a-z0-9])3(?=[a-z0-9])", "e")
 			.replaceAll("(?<=[a-z0-9])1(?=[a-z0-9])", "i")
 			.replaceAll("(?<=[a-z0-9])5(?=[a-z0-9])", "s")
+            .replaceAll("(?<=[a-z0-9])#(?=[a-z0-9])", "u")
 			.trim();
 	}
 	
