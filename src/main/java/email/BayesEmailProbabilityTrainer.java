@@ -34,7 +34,7 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 		String[] words = text.split(" ");
 		for(int i = 0; i < words.length; i++) {
 			
-			//Setup String[] with current word, and combo of (current word + previous word)
+			//Setup String[] with current word, and combo of (previous word + current word)
 			String[] wordOrPhrase;
 			
 			if(i == 0)
