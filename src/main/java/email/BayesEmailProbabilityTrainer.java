@@ -1,7 +1,10 @@
 package email;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
 
 public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 	private BayesEmailScoringSystem scoringSystem;

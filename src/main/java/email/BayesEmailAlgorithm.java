@@ -18,9 +18,13 @@
  *		
  */
 package email;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component("bayesEmailAlgorithm")
 public class BayesEmailAlgorithm implements SpamAlgorithm {
 	private static final double BODY_WEIGHT = 0.35;
 	private static final double SENDER_WEIGHT = 0.2;
@@ -28,6 +32,7 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
 	
 	private BayesEmailScoringSystem scoringSystem;
 	
+	@Autowired
 	public BayesEmailAlgorithm(BayesEmailScoringSystem scoringSystem) {
 		if(scoringSystem == null)
 			throw new IllegalArgumentException("Scoring system cannot be null");
