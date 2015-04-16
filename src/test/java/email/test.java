@@ -8,10 +8,10 @@ public class test {
 		ApplicationContext context = new ClassPathXmlApplicationContext("emailbeans.xml");
 	    
 	    ProbabilityCalculator probCalc = (ProbabilityCalculator)context.getBean("emailprobabilitycalculator");
-
+	    
 		Email email = new Email("NewSexAlert", "want to be my new bangbuddy", "how do you do pussy f#cker :-P are you h#rny?");
 		System.out.println(probCalc.isSpam(email));
-		
+
 		((ClassPathXmlApplicationContext)context).close();
 	 }
 }

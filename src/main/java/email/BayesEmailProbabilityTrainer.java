@@ -3,12 +3,13 @@ package email;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 	private BayesEmailScoringSystem scoringSystem;
 	
+	@Autowired
 	public BayesEmailProbabilityTrainer(BayesEmailScoringSystem scoringSystem) {
 		if(scoringSystem == null)
 			throw new IllegalArgumentException("Scoring system cannot be null");
