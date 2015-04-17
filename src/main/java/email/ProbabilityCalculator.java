@@ -3,7 +3,6 @@ package email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("probabilityCalculator")
 public class ProbabilityCalculator {
 	private SpamAlgorithm algorithm;
 	

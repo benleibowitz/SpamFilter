@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 	private BayesEmailScoringSystem scoringSystem;
 	

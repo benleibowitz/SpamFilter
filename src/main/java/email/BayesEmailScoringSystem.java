@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-@Component
 public class BayesEmailScoringSystem {
 	private static final String BASE_URL = "src/main/resources/";
 	

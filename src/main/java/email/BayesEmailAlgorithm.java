@@ -24,7 +24,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("bayesEmailAlgorithm")
 public class BayesEmailAlgorithm implements SpamAlgorithm {
 	private static final double BODY_WEIGHT = 0.35;
 	private static final double SENDER_WEIGHT = 0.2;
