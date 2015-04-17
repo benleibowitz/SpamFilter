@@ -24,9 +24,13 @@ import org.springframework.stereotype.Component;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 @Component
 public class BayesEmailScoringSystem {
 	private static final String BASE_URL = "src/main/resources/";
+	
+	//Maybe read these from a database instead...
 	private static final String BODYMAP_FILE = BASE_URL + "bodyMap.csv";
 	private static final String SUBJECTMAP_FILE = BASE_URL + "subjectMap.csv";
 	private static final String SENDERMAP_FILE = BASE_URL + "senderMap.csv";
@@ -43,6 +47,8 @@ public class BayesEmailScoringSystem {
 	
 	//Contains words like "if" "and" "the" "I"
 	private List<String> genericWords;
+	
+	private List<String> outputCSVHeaders;
 	
 	public BayesEmailScoringSystem() {
 		initialize();
@@ -71,12 +77,12 @@ public class BayesEmailScoringSystem {
 				csvReader = new CSVReader(new FileReader(fileName));
 				
 				//Read headers
-				csvReader.readNext();
+				outputCSVHeaders = Arrays.asList(csvReader.readNext());
 				
 				for(String[] line : csvReader.readAll()) {
-					int spamMessages = Integer.valueOf(line[1]);
-					int realMessages = Integer.valueOf(line[2]);
-					wordCountMap.put(line[0], new int[]{spamMessages, realMessages});
+					int spamMessages = Integer.valueOf(line[outputCSVHeaders.indexOf("SpamMessages")]);
+					int realMessages = Integer.valueOf(line[outputCSVHeaders.indexOf("RealMessages")]);
+					wordCountMap.put(line[outputCSVHeaders.indexOf("Word")], new int[]{spamMessages, realMessages});
 				}
 				
 			} catch(FileNotFoundException e) {
@@ -102,11 +108,13 @@ public class BayesEmailScoringSystem {
 			csvReader = new CSVReader(new FileReader(GENERICWORD_FILE));
 			
 			//Read headers
-			csvReader.readNext();
+			List<String> headers = Arrays.asList(csvReader.readNext());
 			
-			for(String[] word : csvReader.readAll()) {
-			    genericWords.add(word[0]);
+			String[] line;
+			while((line = csvReader.readNext()) != null) {
+			    genericWords.add(line[headers.indexOf("Word")]);
 			}
+			
 		} catch(FileNotFoundException e) {
 			System.out.println("Could not find generic words file: " + GENERICWORD_FILE);
 			e.printStackTrace();
@@ -134,8 +142,8 @@ public class BayesEmailScoringSystem {
 			try {
 				csvWriter = new CSVWriter(new FileWriter(fileName));
                 
-				//Write headers
-				csvWriter.writeNext(new String[]{"Word", "SpamMessages", "RealMessages"});
+				//Convert outputCSVHeaders list to array and write headers
+				csvWriter.writeNext(outputCSVHeaders.toArray(new String[outputCSVHeaders.size()]));
                 
 				for(String word : wordCountMap.keySet()) {
 					csvWriter.writeNext(new String[]{word, String.valueOf(wordCountMap.get(word)[0]),
