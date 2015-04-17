@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class BayesEmailAlgorithmTest {
-
+    
     @Test
     public void testIsSpam() {
         BayesEmailScoringSystem scoringSystem = new BayesEmailScoringSystem();

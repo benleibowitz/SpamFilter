@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,6 @@ import org.springframework.stereotype.Component;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Component
 public class BayesEmailScoringSystem {
