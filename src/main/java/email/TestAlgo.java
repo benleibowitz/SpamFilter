@@ -17,7 +17,11 @@ public class TestAlgo implements SpamAlgorithm {
 	public boolean isSpam(Email email) {
 		
 		//I call this one, AssumptionAlgorithm :)
-		System.out.println("Running test algorithm on email from sender: " + email.getSender());
+		System.out.println("Running test algorithm on email.");
+		System.out.println("Sender: " + email.getSender());
+		System.out.println("Subject: " + email.getSubject());
+		System.out.println("Body: " + email.getBody());
+		
 		return true;
 	}
 }
