@@ -2,24 +2,31 @@ package test;
 
 import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import email.BayesEmailProbabilityTrainer;
 import email.Email;
-import email.ProbabilityCalculator;
 
 public class traintest {
+    private BayesEmailProbabilityTrainer trainer;
+    
+    @Autowired
+    public void setProbTrainer(BayesEmailProbabilityTrainer trainer) {
+        this.trainer = trainer;
+    }
+    
     public static void main(String[] args) {
-
+        traintest test = new traintest();
+        
         ApplicationContext appContext = new ClassPathXmlApplicationContext(
                 "emailbeans.xml");
-        ProbabilityCalculator probCalc = (ProbabilityCalculator) appContext
-                .getBean("probabilitycalculator");
+        appContext.getAutowireCapableBeanFactory().autowireBeanProperties(test,
+                AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
         Scanner scan = new Scanner(System.in);
-        BayesEmailProbabilityTrainer trainer = (BayesEmailProbabilityTrainer) appContext
-                .getBean("probabilitytrainer");
 
         while (true) {
             System.out.print("sender or @ to break:");
@@ -32,10 +39,8 @@ public class traintest {
             System.out.print("message:");
             String message = scan.nextLine();
 
-            trainer.train(new Email(sender, subject, message), false);
+            test.trainer.train(new Email(sender, subject, message), false);
         }
-
-        trainer.commit();
 
         ((ClassPathXmlApplicationContext) appContext).close();
     }

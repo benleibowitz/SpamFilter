@@ -19,10 +19,6 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
     }
 
     @Override
-    public void commit() {
-    }
-
-    @Override
     public void train(Email email, boolean spam) {
         if (email == null)
             throw new IllegalArgumentException("Message cannot be null");
@@ -66,7 +62,10 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
                     else
                         word.setRealCount(word.getRealCount() + 1);
                     
-                    
+                    if(shouldInsertNewWord)
+                        wordDAO.insert(word, source);
+                    else
+                        wordDAO.update(word, source);
                 }
                 
             }

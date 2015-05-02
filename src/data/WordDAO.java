@@ -46,13 +46,15 @@ public class WordDAO {
         return words;
     }
     
-    public void insertWord(Word word, Email.Source source) {
+    public void insertOrUpdate(Word word, Email.Source source) {
         if(this.getWord(word.getWord(), source) == null) {
-            
+            insert(word, source);
+        } else {
+            update(word, source);
         }
     }
     
-    private void insert(Word word, Email.Source source) {
+    public void insert(Word word, Email.Source source) {
         String sql = String.format("INSERT INTO %s (word, spam_count, real_count) VALUES "
                 + "(?, ?, ?)", String.valueOf(source).toLowerCase());
 
@@ -60,6 +62,16 @@ public class WordDAO {
             jdbcTemplate = new JdbcTemplate(dataSource);
         
         jdbcTemplate.update(sql, new Object[]{word.getWord(), word.getSpamCount(), word.getRealCount()});
+    }
+
+    public void update(Word word, Email.Source source) {
+        String sql = String.format("UPDATE %s SET spam_count=?, real_count=? "
+                + "WHERE word = ?", String.valueOf(source).toLowerCase());
+
+        if(jdbcTemplate == null) 
+            jdbcTemplate = new JdbcTemplate(dataSource);
+        
+        jdbcTemplate.update(sql, new Object[]{word.getSpamCount(), word.getRealCount(), word.getWord()});
     }
     
 }
