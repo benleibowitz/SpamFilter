@@ -45,4 +45,21 @@ public class WordDAO {
         List<Word> words = jdbcTemplate.query(sql, new GenericWordRowMapper());
         return words;
     }
+    
+    public void insertWord(Word word, Email.Source source) {
+        if(this.getWord(word.getWord(), source) == null) {
+            
+        }
+    }
+    
+    private void insert(Word word, Email.Source source) {
+        String sql = String.format("INSERT INTO %s (word, spam_count, real_count) VALUES "
+                + "(?, ?, ?)", String.valueOf(source).toLowerCase());
+
+        if(jdbcTemplate == null) 
+            jdbcTemplate = new JdbcTemplate(dataSource);
+        
+        jdbcTemplate.update(sql, new Object[]{word.getWord(), word.getSpamCount(), word.getRealCount()});
+    }
+    
 }

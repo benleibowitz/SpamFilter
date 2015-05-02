@@ -78,8 +78,7 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
 
             for (String wordOrPhraseString : wordCombos) {
                 //Create new word from the string we are looking at
-                Word wordOrPhrase = new Word();
-                wordOrPhrase.setWord(wordOrPhraseString);
+                Word wordOrPhrase = new Word(wordOrPhraseString);
                 
                 
                 if(!genericWords.contains(wordOrPhrase)) {

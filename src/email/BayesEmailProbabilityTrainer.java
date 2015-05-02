@@ -1,10 +1,10 @@
 package email;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import data.Word;
 import data.WordDAO;
 
 public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
@@ -27,47 +27,48 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
         if (email == null)
             throw new IllegalArgumentException("Message cannot be null");
 
-        train(email.getBody(), spam, wordDAO.getBodyCountMap());
-        train(email.getSender(), spam, wordDAO.getSenderCountMap());
-        train(email.getSubject(), spam, wordDAO.getSubjectCountMap());
+        train(email.getBody(), spam, Email.Source.BODY);
+        train(email.getSender(), spam, Email.Source.SENDER);
+        train(email.getSubject(), spam, Email.Source.SUBJECT);
     }
 
-    private void train(String text, boolean spam,
-            Map<String, int[]> wordCountMap) {
-        List<String> genericWords = wordDAO.getGenericWords();
+    private void train(String text, boolean spam, Email.Source source) {
+        List<Word> genericWords = wordDAO.getGenericWords();
 
-        String[] words = text.split(" ");
-        for (int i = 0; i < words.length; i++) {
+        String[] wordsInText = text.split(" ");
+        for (int i = 0; i < wordsInText.length; i++) {
 
             // Setup String[] with current word, and combo of (previous word +
             // current word)
             String[] wordOrPhrase;
 
             if (i == 0)
-                wordOrPhrase = new String[] { words[i] };
+                wordOrPhrase = new String[] { wordsInText[i] };
             else
-                wordOrPhrase = new String[] { words[i],
-                        words[i - 1] + " " + words[i] };
+                wordOrPhrase = new String[] { wordsInText[i],
+                        wordsInText[i - 1] + " " + wordsInText[i] };
 
-            for (String word : wordOrPhrase) {
-                int[] probs;
-
-                if (!(genericWords.contains(word))) {
-
-                    if (wordCountMap.containsKey(word))
-                        // If word found in map, increment
-                        probs = wordCountMap.get(word);
+            
+            for (String wordString : wordOrPhrase) {
+                Word word = new Word(wordString);
+                
+                if(!genericWords.contains(word)) {
+                    boolean shouldInsertNewWord = false;
+                    
+                    word = wordDAO.getWord(wordString, source);
+                    if(word == null) {
+                        word = new Word(wordString);
+                        shouldInsertNewWord = true;
+                    }
+                    
+                    if(spam)
+                        word.setSpamCount(word.getSpamCount() + 1);
                     else
-                        // Word is not in map. Add it
-                        probs = new int[] { 0, 0 };
-
-                    if (spam)
-                        probs[0] += 1;
-                    else
-                        probs[1] += 1;
-
-                    wordCountMap.put(word, probs);
+                        word.setRealCount(word.getRealCount() + 1);
+                    
+                    
                 }
+                
             }
         }
     }
