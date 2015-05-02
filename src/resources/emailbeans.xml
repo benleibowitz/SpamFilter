@@ -15,9 +15,9 @@
 	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 	<bean class="data.WordDAO"/>
 
-	<bean id="spamalgorithm" class="email.BayesEmailAlgorithm"/>
-	<bean id="probabilitycalculator" class="email.ProbabilityCalculator"/>
-	<bean id="probabilitytrainer" class="email.BayesEmailProbabilityTrainer"/>
+	<bean class="email.TestAlgo"/>
+	<bean class="email.ProbabilityCalculator"/>
+	<bean class="email.BayesEmailProbabilityTrainer"/>
 	
 	<!-- Development / testing profile -->
 	<beans profile="dev">

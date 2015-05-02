@@ -10,21 +10,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import email.Email;
 
 public class WordDAO {
-    private DataSource dataSource;
     private JdbcTemplate jdbcTemplate;
     
     @Autowired
     public WordDAO(DataSource dataSource) {
-        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
     
     public Word getWord(String desiredWord, Email.Source source) {
-        String sql = String.format("SELECT word, spam_count, real_count FROM %s"
-                + " WHERE word = ?", String.valueOf(source).toLowerCase());
-        
-        if(jdbcTemplate == null)
-            jdbcTemplate = new JdbcTemplate(dataSource);
-        
+        String sql = "SELECT word, spam_count, real_count FROM $table WHERE word = ?"
+                .replace("$table", String.valueOf(source).toLowerCase());
+
         Word word;
         
         try {
@@ -39,9 +35,6 @@ public class WordDAO {
     public List<Word> getGenericWords() {
         String sql = "SELECT word FROM generic_words";
 
-        if(jdbcTemplate == null) 
-            jdbcTemplate = new JdbcTemplate(dataSource);
-
         List<Word> words = jdbcTemplate.query(sql, new GenericWordRowMapper());
         return words;
     }
@@ -55,21 +48,15 @@ public class WordDAO {
     }
     
     public void insert(Word word, Email.Source source) {
-        String sql = String.format("INSERT INTO %s (word, spam_count, real_count) VALUES "
-                + "(?, ?, ?)", String.valueOf(source).toLowerCase());
-
-        if(jdbcTemplate == null) 
-            jdbcTemplate = new JdbcTemplate(dataSource);
+        String sql = "INSERT INTO $table (word, spam_count, real_count) VALUES (?, ?, ?)"
+                .replace("$table", String.valueOf(source).toLowerCase());
         
         jdbcTemplate.update(sql, new Object[]{word.getWord(), word.getSpamCount(), word.getRealCount()});
     }
 
     public void update(Word word, Email.Source source) {
-        String sql = String.format("UPDATE %s SET spam_count=?, real_count=? "
-                + "WHERE word = ?", String.valueOf(source).toLowerCase());
-
-        if(jdbcTemplate == null) 
-            jdbcTemplate = new JdbcTemplate(dataSource);
+        String sql = "UPDATE $table SET spam_count=?, real_count=? WHERE word = ?"
+                .replace("$table", String.valueOf(source).toLowerCase());
         
         jdbcTemplate.update(sql, new Object[]{word.getSpamCount(), word.getRealCount(), word.getWord()});
     }
