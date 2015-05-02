@@ -13,6 +13,7 @@ public class WordRowMapper implements RowMapper<Word> {
         
         word.setSpamCount(rs.getInt("spam_count"));
         word.setSpamCount(rs.getInt("real_count"));
+        word.setWord(rs.getString("word"));
         
         return word;
     }

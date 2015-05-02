@@ -19,7 +19,7 @@ public class WordDAO {
     }
     
     public Word getWord(String desiredWord, Email.Source source) {
-        String sql = String.format("SELECT spam_count, real_count FROM %s"
+        String sql = String.format("SELECT word, spam_count, real_count FROM %s"
                 + " WHERE word = ?", String.valueOf(source).toLowerCase());
         
         if(jdbcTemplate == null)
@@ -38,11 +38,11 @@ public class WordDAO {
     
     public List<Word> getGenericWords() {
         String sql = "SELECT word FROM generic_words";
-    
-        if(jdbcTemplate == null)
+
+        if(jdbcTemplate == null) 
             jdbcTemplate = new JdbcTemplate(dataSource);
-        
-        List<Word> words = jdbcTemplate.query(sql, new WordRowMapper());
+
+        List<Word> words = jdbcTemplate.query(sql, new GenericWordRowMapper());
         return words;
     }
 }

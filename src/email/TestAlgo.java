@@ -27,12 +27,19 @@ public class TestAlgo implements SpamAlgorithm {
         
         for(String wordString : email.getBody().split(" ")) {
             System.out.println("Trying word: " + wordString);
-            Word word = wordDAO.getWord(wordString, Email.Source.BODY);
-            System.out.println("Found word: " + word);
-            if(word != null)
-                System.out.println("\tSpam: " + word.getSpamCount() + ", Real: " + word.getRealCount());
-        }
 
+            Word word = new Word();word.setWord(wordString);
+            if(wordDAO.getGenericWords().contains(word)) {
+                System.out.println("GENERIC WORD");
+            } else {
+                word = wordDAO.getWord(wordString, Email.Source.BODY);
+                System.out.println("Found word: " + word);
+                if(word != null)
+                    System.out.println("\tSpam: " + word.getSpamCount() + ", Real: " + word.getRealCount());
+            }
+            
+        }
+        
         // I call this AssumptionAlgorithm :)
         return true;
     }

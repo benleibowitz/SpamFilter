@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import data.Word;
 import email.Email;
 import email.ProbabilityCalculator;
 
@@ -35,7 +36,7 @@ public class test {
                 AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
         Email email = new Email("NewSexAlert", "want to be my new bangbuddy",
-                "how do you do pussy f#cker :-P are you h#rny?");
+                "how do you do pussy f#cker :-P are you h#rny? I like an and the");
         System.out.println(t.probCalc.isSpam(email));
 
         ((ClassPathXmlApplicationContext) context).close();
