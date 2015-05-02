@@ -16,56 +16,33 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
+import data.Word;
+import data.WordDAO;
+
 public class BayesEmailScoringSystem {
-    private static final String BASE_URL = "src/resources/";
-
-    // Maybe read these from a database instead...
-    private static final String BODYMAP_FILE = BASE_URL + "bodyMap.csv";
-    private static final String SUBJECTMAP_FILE = BASE_URL + "subjectMap.csv";
-    private static final String SENDERMAP_FILE = BASE_URL + "senderMap.csv";
-    private static final String GENERICWORD_FILE = BASE_URL
-            + "genericWords.csv";
-
-    // All words in map are lowercase.
-    // Probability map contains: <word, { COUNT(spam messages containing word),
-    // COUNT(real messages containing word) }>
-    private Map<String, int[]> bodyCountMap;
-    private Map<String, int[]> subjectCountMap;
-    private Map<String, int[]> senderCountMap;
-
-    // Contains <MappingFileURLString, respectiveCountMap>
-    private Map<String, Map<String, int[]>> fileMap;
+    private WordDAO wordDAO;
 
     // Contains words like "if" "and" "the" "I"
-    private List<String> genericWords;
+    private List<Word> genericWords;
 
-    private List<String> outputCSVHeaders;
-
-    public BayesEmailScoringSystem() {
+    public BayesEmailScoringSystem(WordDAO wordDAO) {
+        if(wordDAO == null)
+            throw new IllegalArgumentException("Word Data Access Object cannot be null");
+        
+        this.wordDAO = wordDAO;
         initialize();
     }
 
     private void initialize() {
         genericWords = new ArrayList<>();
         readGenericWords();
-
-        fileMap = new HashMap<>();
-
-        bodyCountMap = new HashMap<>();
-        senderCountMap = new HashMap<>();
-        subjectCountMap = new HashMap<>();
-
-        fileMap.put(BODYMAP_FILE, bodyCountMap);
-        fileMap.put(SENDERMAP_FILE, senderCountMap);
-        fileMap.put(SUBJECTMAP_FILE, subjectCountMap);
-
+        
         for (String fileName : fileMap.keySet()) {
             Map<String, int[]> wordCountMap = fileMap.get(fileName);
 
@@ -103,34 +80,7 @@ public class BayesEmailScoringSystem {
     }
 
     public void readGenericWords() {
-        CSVReader csvReader = null;
-
-        try {
-            csvReader = new CSVReader(new FileReader(GENERICWORD_FILE));
-
-            // Read headers
-            List<String> headers = Arrays.asList(csvReader.readNext());
-
-            String[] line;
-            while ((line = csvReader.readNext()) != null) {
-                genericWords.add(line[headers.indexOf("Word")]);
-            }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not find generic words file: "
-                    + GENERICWORD_FILE);
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (csvReader != null) {
-                try {
-                    csvReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        genericWords = wordDAO.getGenericWords();
     }
 
     public void write() {
