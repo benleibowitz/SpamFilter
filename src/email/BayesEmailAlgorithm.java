@@ -20,23 +20,25 @@
 package email;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import data.Word;
+import data.WordDAO;
 
 public class BayesEmailAlgorithm implements SpamAlgorithm {
     private static final double BODY_WEIGHT = 0.35;
     private static final double SENDER_WEIGHT = 0.2;
     private static final double SUBJECT_WEIGHT = 0.45;
 
-    private BayesEmailScoringSystem scoringSystem;
+    private WordDAO wordDAO;
 
     @Autowired
-    public BayesEmailAlgorithm(BayesEmailScoringSystem scoringSystem) {
-        if (scoringSystem == null)
-            throw new IllegalArgumentException("Scoring system cannot be null");
+    public BayesEmailAlgorithm(WordDAO wordDAO) {
+        if (wordDAO == null)
+            throw new IllegalArgumentException("Word Data Access Object cannot be null");
 
-        this.scoringSystem = scoringSystem;
+        this.wordDAO = wordDAO;
     }
 
     @Override
@@ -44,22 +46,17 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
         if (email == null)
             throw new IllegalArgumentException("Message cannot be null");
 
-        double weightedProbability = BODY_WEIGHT
-                * processText(email.getBody(), scoringSystem.getBodyCountMap())
-                + SENDER_WEIGHT
-                * processText(email.getSender(),
-                        scoringSystem.getSenderCountMap())
-                + SUBJECT_WEIGHT
-                * processText(email.getSubject(),
-                        scoringSystem.getSubjectCountMap());
+        double weightedProbability = BODY_WEIGHT * processWord(email.getBody()) 
+                + SENDER_WEIGHT * processWord(email.getSender())
+                + SUBJECT_WEIGHT * processWord(email.getSubject());
 
         System.out.println(weightedProbability);
 
         return (weightedProbability > 0.5);
     }
 
-    private double processText(String text, Map<String, int[]> wordCountMap) {
-        List<String> genericWords = scoringSystem.getGenericWords();
+    private double processWord(String text) {
+        List<Word> genericWords = wordDAO.getGenericWords();
         double probabilitySpam = 0;
         double sumLogsSpam = 0;
 
@@ -80,15 +77,14 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
             }
 
             for (String wordOrPhrase : wordCombos) {
-                if (wordCountMap.containsKey(wordOrPhrase)
+                Word wordFromDatabase = wordDAO.getWord(wordOrPhrase);
+                
+                if (wordOrPhrase.equals(wordFromDatabase)
                         && !(genericWords.contains(wordOrPhrase))) {
                     // Calculate probability of spam / real
-                    int totalWords = wordCountMap.get(wordOrPhrase)[0]
-                            + wordCountMap.get(wordOrPhrase)[1];
-                    double probSpamWord = (double) wordCountMap
-                            .get(wordOrPhrase)[0] / totalWords;
-                    double probRealWord = (double) wordCountMap
-                            .get(wordOrPhrase)[1] / totalWords;
+                    int totalWords = wordFromDatabase.getRealCount() + wordFromDatabase.getSpamCount();
+                    double probSpamWord = (double) wordFromDatabase.getSpamCount() / totalWords;
+                    double probRealWord = (double) wordFromDatabase.getRealCount() / totalWords;
 
                     // Check threshold and add to total probability
                     if (Math.abs(0.5 - probSpamWord) > LEGITIMATE_WORD_THRESHOLD) {

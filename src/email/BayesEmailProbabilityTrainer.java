@@ -5,20 +5,22 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import data.WordDAO;
+
 public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
-    private BayesEmailScoringSystem scoringSystem;
+    private WordDAO wordDAO;
 
     @Autowired
-    public BayesEmailProbabilityTrainer(BayesEmailScoringSystem scoringSystem) {
-        if (scoringSystem == null)
+    public BayesEmailProbabilityTrainer(WordDAO wordDAO) {
+        if (wordDAO == null)
             throw new IllegalArgumentException("Scoring system cannot be null");
 
-        this.scoringSystem = scoringSystem;
+        this.wordDAO = wordDAO;
     }
 
     @Override
     public void commit() {
-        scoringSystem.write();
+        wordDAO.write();
     }
 
     @Override
@@ -26,14 +28,14 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
         if (email == null)
             throw new IllegalArgumentException("Message cannot be null");
 
-        train(email.getBody(), spam, scoringSystem.getBodyCountMap());
-        train(email.getSender(), spam, scoringSystem.getSenderCountMap());
-        train(email.getSubject(), spam, scoringSystem.getSubjectCountMap());
+        train(email.getBody(), spam, wordDAO.getBodyCountMap());
+        train(email.getSender(), spam, wordDAO.getSenderCountMap());
+        train(email.getSubject(), spam, wordDAO.getSubjectCountMap());
     }
 
     private void train(String text, boolean spam,
             Map<String, int[]> wordCountMap) {
-        List<String> genericWords = scoringSystem.getGenericWords();
+        List<String> genericWords = wordDAO.getGenericWords();
 
         String[] words = text.split(" ");
         for (int i = 0; i < words.length; i++) {
