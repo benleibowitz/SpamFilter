@@ -1,9 +1,13 @@
-package email;
+package test;
 
 import java.util.Scanner;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import email.BayesEmailProbabilityTrainer;
+import email.Email;
+import email.ProbabilityCalculator;
 
 public class traintest {
     public static void main(String[] args) {

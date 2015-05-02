@@ -1,9 +1,9 @@
-package email;
-
-import static org.junit.Assert.*;
+package test;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import email.BayesEmailScoringSystem;
 
 public class BayesCommentScoringSystemTest {
 

@@ -20,13 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
-
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 public class BayesEmailScoringSystem {
-	private static final String BASE_URL = "src/main/resources/";
+	private static final String BASE_URL = "src/resources/";
 	
 	//Maybe read these from a database instead...
 	private static final String BODYMAP_FILE = BASE_URL + "bodyMap.csv";

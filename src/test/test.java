@@ -1,11 +1,14 @@
-package email;
+package test;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import email.Email;
+import email.ProbabilityCalculator;
+
 public class test {
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("emailbeans.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("resources/emailbeans.xml");
 		
 	    ProbabilityCalculator probCalc = (ProbabilityCalculator)context.getBean("probabilitycalculator");
 	    
