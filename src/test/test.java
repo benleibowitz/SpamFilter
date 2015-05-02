@@ -36,7 +36,7 @@ public class test {
                 AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
         Email email = new Email("NewSexAlert", "want to be my new bangbuddy",
-                "foo");
+                "hey i saw something online now and you foo");
         System.out.println(t.probCalc.isSpam(email));
 
         ((ClassPathXmlApplicationContext) context).close();

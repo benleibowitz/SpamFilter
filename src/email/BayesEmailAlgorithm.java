@@ -93,7 +93,7 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
     
                         // Check threshold and add to total probability
                         if (Math.abs(0.5 - probSpamWord) > LEGITIMATE_WORD_THRESHOLD) {
-    
+
                             // Don't want 0 numerator, as Math.log(0) returns
                             // negative infinity.
                             if (probSpamWord == 0)
