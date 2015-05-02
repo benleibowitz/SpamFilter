@@ -1,5 +1,8 @@
 package test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +22,15 @@ public class traintest {
     }
     
     public static void main(String[] args) {
+        try {
+            loadConfigProperties("resources/application.properties");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         traintest test = new traintest();
         
         ApplicationContext appContext = new ClassPathXmlApplicationContext(
-                "emailbeans.xml");
+                "resources/emailbeans.xml");
         appContext.getAutowireCapableBeanFactory().autowireBeanProperties(test,
                 AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
@@ -43,5 +51,18 @@ public class traintest {
         }
 
         ((ClassPathXmlApplicationContext) appContext).close();
+    }
+    
+    public static void loadConfigProperties(String propertiesFileURL) throws IOException {
+        Properties systemProperties = System.getProperties();
+        Properties configProperties = new Properties();
+        
+        InputStream iStream = test.class.getClassLoader().getResourceAsStream(propertiesFileURL);
+        configProperties.load(iStream);
+        
+        for(Object key : configProperties.keySet()) {
+            systemProperties.put(key, configProperties.get(key));
+        }
+        
     }
 }
