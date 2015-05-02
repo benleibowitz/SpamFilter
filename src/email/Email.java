@@ -1,6 +1,10 @@
 package email;
 
 public class Email {
+    public enum Source {
+        SENDER, SUBJECT, BODY
+    }
+    
     private String sender;
     private String subject;
     private String body;

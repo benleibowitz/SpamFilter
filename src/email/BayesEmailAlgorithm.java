@@ -46,16 +46,16 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
         if (email == null)
             throw new IllegalArgumentException("Message cannot be null");
 
-        double weightedProbability = BODY_WEIGHT * processWord(email.getBody()) 
-                + SENDER_WEIGHT * processWord(email.getSender())
-                + SUBJECT_WEIGHT * processWord(email.getSubject());
+        double weightedProbability = BODY_WEIGHT * processWord(email.getBody(), Email.Source.BODY) 
+                + SENDER_WEIGHT * processWord(email.getSender(), Email.Source.SENDER)
+                + SUBJECT_WEIGHT * processWord(email.getSubject(), Email.Source.SUBJECT);
 
         System.out.println(weightedProbability);
 
         return (weightedProbability > 0.5);
     }
 
-    private double processWord(String text) {
+    private double processWord(String text, Email.Source source) {
         List<Word> genericWords = wordDAO.getGenericWords();
         double probabilitySpam = 0;
         double sumLogsSpam = 0;
@@ -77,7 +77,7 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
             }
 
             for (String wordOrPhrase : wordCombos) {
-                Word wordFromDatabase = wordDAO.getWord(wordOrPhrase);
+                Word wordFromDatabase = wordDAO.getWord(wordOrPhrase, source);
                 
                 if (wordOrPhrase.equals(wordFromDatabase)
                         && !(genericWords.contains(wordOrPhrase))) {

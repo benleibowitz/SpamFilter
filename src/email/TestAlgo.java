@@ -2,10 +2,15 @@ package email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TestAlgo implements SpamAlgorithm {
-    @Autowired
-    public TestAlgo(BayesEmailScoringSystem scoringSystem) {
+import data.Word;
+import data.WordDAO;
 
+public class TestAlgo implements SpamAlgorithm {
+    private WordDAO wordDAO;
+    
+    @Autowired
+    public TestAlgo(WordDAO wordDAO) {
+        this.wordDAO = wordDAO;
     }
 
     public TestAlgo() {
@@ -19,6 +24,14 @@ public class TestAlgo implements SpamAlgorithm {
         System.out.println("Sender: " + email.getSender());
         System.out.println("Subject: " + email.getSubject());
         System.out.println("Body: " + email.getBody());
+        
+        for(String wordString : email.getBody().split(" ")) {
+            System.out.println("Trying word: " + wordString);
+            Word word = wordDAO.getWord(wordString, Email.Source.BODY);
+            System.out.println("Found word: " + word);
+            if(word != null)
+                System.out.println("\tSpam: " + word.getSpamCount() + ", Real: " + word.getRealCount());
+        }
 
         // I call this AssumptionAlgorithm :)
         return true;

@@ -20,7 +20,6 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
 
     @Override
     public void commit() {
-        wordDAO.write();
     }
 
     @Override
