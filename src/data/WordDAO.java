@@ -17,6 +17,8 @@ public class WordDAO {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
     
+    //Gets word information from sql table, where sql table comes in as enum in
+    //either BODY, SUBJECT, SENDER
     public Word getWord(String desiredWord, Email.Source source) {
         String sql = "SELECT word, spam_count, real_count FROM $table WHERE word = ?"
                 .replace("$table", String.valueOf(source).toLowerCase());
@@ -47,6 +49,8 @@ public class WordDAO {
         }
     }
     
+    //Gets word information from sql table, where sql table comes in as enum in
+    //either BODY, SUBJECT, SENDER
     public void insert(Word word, Email.Source source) {
         String sql = "INSERT INTO $table (word, spam_count, real_count) VALUES (?, ?, ?)"
                 .replace("$table", String.valueOf(source).toLowerCase());
@@ -54,6 +58,8 @@ public class WordDAO {
         jdbcTemplate.update(sql, new Object[]{word.getWord(), word.getSpamCount(), word.getRealCount()});
     }
 
+    //Gets word information from sql table, where sql table comes in as enum in
+    //either BODY, SUBJECT, SENDER
     public void update(Word word, Email.Source source) {
         String sql = "UPDATE $table SET spam_count=?, real_count=? WHERE word = ?"
                 .replace("$table", String.valueOf(source).toLowerCase());
