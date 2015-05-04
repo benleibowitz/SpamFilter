@@ -14,14 +14,6 @@ public class ProbCalcTest {
 
     @Test
     public void testIsSpam() {
-        ProbabilityCalculator calc = (ProbabilityCalculator) app
-                .getBean("probabilitycalculator");
-        Assert.assertNotNull(calc);
-
-        Email email = new Email("test sender", "test subject", "test body");
-        Assert.assertNotNull(email);
-
-        calc.isSpam(email);
     }
 
 }
