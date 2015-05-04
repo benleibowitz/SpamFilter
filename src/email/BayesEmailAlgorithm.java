@@ -111,7 +111,7 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
                         }
                     } //close if(wordOrPhrase != null)
                 } //close if(!genericWords.contains(word)
-            }//close for loop over each word in body
+            } //close for loop over each word in body
         }
 
         probabilitySpam = 1 / (1 + Math.pow(Math.E, sumLogsSpam));
