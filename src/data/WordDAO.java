@@ -37,7 +37,7 @@ public class WordDAO {
     public List<Word> getGenericWords() {
         String sql = "SELECT word FROM generic_words";
 
-        List<Word> words = jdbcTemplate.query(sql, new GenericWordRowMapper());
+        List<Word> words = jdbcTemplate.query(sql, new WordRowMapper());
         return words;
     }
     
