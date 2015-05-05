@@ -9,11 +9,10 @@ public class WordRowMapper implements RowMapper<Word> {
 
     @Override
     public Word mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Word word = new Word();
+        Word word = new Word(rs.getString("word"));
 
         word.setSpamCount(rs.getInt("spam_count"));
         word.setRealCount(rs.getInt("real_count"));
-        word.setWord(rs.getString("word"));
 
         return word;
     }
