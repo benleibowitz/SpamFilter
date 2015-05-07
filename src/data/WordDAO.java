@@ -4,12 +4,22 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import email.Email;
 
 public class WordDAO {
+    @Value("${database.table.sender}")
+    private String senderTableName;
+    
+    @Value("${database.table.subject}")
+    private String subjectTableName;
+    
+    @Value("${database.table.body}")
+    private String bodyTableName;
+    
     private JdbcTemplate jdbcTemplate;
     
     @Autowired
@@ -17,11 +27,29 @@ public class WordDAO {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
     
+    private String getTableNameForSource(Email.Source source) {
+        String tableName = null;
+        
+        switch(source) {
+            case SUBJECT:
+                tableName = subjectTableName;
+                break;
+            case SENDER:
+                tableName = senderTableName;
+                break;
+            case BODY:
+                tableName = bodyTableName;
+                break;
+        }
+        
+        return tableName;
+    }
+    
     //Gets word information from sql table, where sql table comes in as enum in
     //either BODY, SUBJECT, SENDER
     public Word getWord(String desiredWord, Email.Source source) {
         String sql = "SELECT word, spam_count, real_count FROM $table WHERE word = ?"
-                .replace("$table", String.valueOf(source).toLowerCase());
+                .replace("$table", getTableNameForSource(source));
 
         Word word;
         
@@ -53,7 +81,7 @@ public class WordDAO {
     //either BODY, SUBJECT, SENDER
     public void insert(Word word, Email.Source source) {
         String sql = "INSERT INTO $table (word, spam_count, real_count) VALUES (?, ?, ?)"
-                .replace("$table", String.valueOf(source).toLowerCase());
+                .replace("$table", getTableNameForSource(source));
         
         jdbcTemplate.update(sql, new Object[]{word.getWord(), word.getSpamCount(), word.getRealCount()});
     }
@@ -62,7 +90,7 @@ public class WordDAO {
     //either BODY, SUBJECT, SENDER
     public void update(Word word, Email.Source source) {
         String sql = "UPDATE $table SET spam_count=?, real_count=? WHERE word = ?"
-                .replace("$table", String.valueOf(source).toLowerCase());
+                .replace("$table", getTableNameForSource(source));
         
         jdbcTemplate.update(sql, new Object[]{word.getSpamCount(), word.getRealCount(), word.getWord()});
     }
