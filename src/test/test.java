@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
@@ -22,6 +23,7 @@ public class test {
     }
     
     public static void main(String[] args) {
+        
         try {
             System.getProperties().load(new FileReader("src/resources/config.properties"));
         } catch (IOException e) {
@@ -33,6 +35,7 @@ public class test {
         
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 "resources/emailbeans.xml");
+        
         context.getAutowireCapableBeanFactory().autowireBeanProperties(t,
                 AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 

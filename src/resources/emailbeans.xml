@@ -15,7 +15,8 @@
 	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 	<bean class="data.WordDAO"/>
 
-	<bean class="email.TestAlgo"/>
+	<bean class="email.TestAlgo" primary="true"/>
+	<bean class="email.BayesEmailAlgorithm"/>
 	<bean class="email.ProbabilityCalculator"/>
 	<bean class="email.BayesEmailProbabilityTrainer"/>
 	
