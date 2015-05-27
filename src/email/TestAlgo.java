@@ -36,10 +36,10 @@ public class TestAlgo implements SpamAlgorithm {
                 System.out.println("GENERIC WORD");
             } else {
                 word = wordDAO.getWord(wordString, Email.Source.BODY);
-                System.out.println("Found word: " + word);
                 
-                if(word != null)
+                if(word != null) {
                     System.out.println("\tSpam: " + word.getSpamCount() + ", Real: " + word.getRealCount());
+                }
             }
             
         }

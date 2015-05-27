@@ -16,7 +16,7 @@
 	<bean class="data.WordDAO"/>
 
 	<bean class="email.TestAlgo" primary="true"/>
-	<bean class="email.BayesEmailAlgorithm"/>
+	<bean class="email.BayesEmailAlgorithm" />
 	<bean class="email.ProbabilityCalculator"/>
 	<bean class="email.BayesEmailProbabilityTrainer"/>
 	
