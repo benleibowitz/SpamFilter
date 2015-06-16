@@ -106,8 +106,8 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
                             double pDenom = (probSpamWord * PROBABILITY_SPAM_MESSAGE)
                                     + (probRealWord * (1 - PROBABILITY_SPAM_MESSAGE));
     
-                            sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom) - Math
-                                    .log(pSpamNumerator / pDenom));
+                            sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom)
+                                    - Math.log(pSpamNumerator / pDenom));
                         }
                     } //close if(wordOrPhrase != null)
                 } //close if(!genericWords.contains(word)
