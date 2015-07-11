@@ -49,7 +49,7 @@ public class WordDAO {
     public Word getWord(String desiredWord, Email.Source source) {
         String sql = "SELECT word, spam_count, real_count FROM $table WHERE word = ?"
                 .replace("$table", getTableNameForSource(source));
-
+        
         Word word;
         
         try {
