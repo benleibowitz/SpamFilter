@@ -14,7 +14,7 @@ import email.Email;
 import email.ProbabilityCalculator;
 
 @PropertySource("classpath:resources/application.properties")
-public class test {
+public class Test {
     private ProbabilityCalculator probCalc;
     
     @Autowired
@@ -31,7 +31,7 @@ public class test {
             throw new IllegalStateException("Cannot continue without loading active profile");
         } 
         
-        test t = new test();
+        Test t = new Test();
         
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 "resources/emailbeans.xml");

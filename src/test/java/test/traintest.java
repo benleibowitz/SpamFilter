@@ -57,7 +57,7 @@ public class traintest {
         Properties systemProperties = System.getProperties();
         Properties configProperties = new Properties();
         
-        InputStream iStream = test.class.getClassLoader().getResourceAsStream(propertiesFileURL);
+        InputStream iStream = Test.class.getClassLoader().getResourceAsStream(propertiesFileURL);
         configProperties.load(iStream);
         
         for(Object key : configProperties.keySet()) {
