@@ -31,13 +31,11 @@ public class App {
         App b = new App();
 
         ApplicationContext context = new ClassPathXmlApplicationContext(
-                "resources/emailbeans.xml");
+                "emailbeans.xml");
         
         context.getAutowireCapableBeanFactory().autowireBeanProperties(b,
                 AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
 
-        //Email email = new Email("NewSexAlert", "want to be my new bangbuddy",
-        //        "hey i saw something online now and you foo");
         Email email = new Email("Jeremy M.", "Here is the job opportunity you requested", "foo bar");
         System.out.println(b.probCalc.isSpam(email));
 
