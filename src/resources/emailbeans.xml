@@ -24,7 +24,7 @@
 	<beans profile="dev">
 		<jdbc:embedded-database id="datasource" type="HSQL">
 			<jdbc:script location="classpath:schema.sql"/>
-			<jdbc:script location="classpath:MOCK_DATA.sql"/>
+			<jdbc:script location="classpath:mock_data.sql"/>
 		</jdbc:embedded-database>
 	</beans>
 	
