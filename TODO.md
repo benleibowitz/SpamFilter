@@ -1,2 +1,0 @@
-- [ ] separate probabilities for hotwords ?
-- [ ] regex text processing class
