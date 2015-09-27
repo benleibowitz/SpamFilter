@@ -20,7 +20,7 @@
 	
 	<!-- Development / testing profile -->
 	<beans profile="dev">
-		<bean class="email.TestAlgo"/>
+		<bean class="email.BayesEmailAlgorithm"/>
 		
 		<jdbc:embedded-database id="datasource" type="HSQL">
 			<jdbc:script location="classpath:schema.sql"/>
@@ -38,6 +38,16 @@
 		    <property name="username" value="${jdbc.username}"/>
 		    <property name="password" value="${jdbc.password}"/>
 		</bean>
+	</beans>
+	
+	<!-- Test algorithm prints out words and retrieves values from database -->
+	<beans profile="test">
+		<bean class="email.TestAlgo"/>
+		
+		<jdbc:embedded-database id="datasource" type="HSQL">
+			<jdbc:script location="classpath:schema.sql"/>
+			<jdbc:script location="classpath:mock_data.sql"/>
+		</jdbc:embedded-database>
 	</beans>
 	
 </beans>
