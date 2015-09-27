@@ -17,7 +17,7 @@ import email.ProbabilityCalculator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles(profiles="dev")
-@ContextConfiguration("classpath:emailbeans.xml")
+@ContextConfiguration("emailbeans.xml")
 public class TestEmail {
     @Autowired
     private ProbabilityCalculator probCalc;
