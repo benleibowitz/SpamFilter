@@ -15,13 +15,13 @@
 	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 	
 	<bean class="data.WordDAO"/>
-	<bean class="email.TestAlgo"/>
-	<bean class="email.BayesEmailAlgorithm" primary="true"/>
 	<bean class="email.ProbabilityCalculator"/>
 	<bean class="email.BayesEmailProbabilityTrainer"/>
 	
 	<!-- Development / testing profile -->
 	<beans profile="dev">
+		<bean class="email.TestAlgo"/>
+		
 		<jdbc:embedded-database id="datasource" type="HSQL">
 			<jdbc:script location="classpath:schema.sql"/>
 			<jdbc:script location="classpath:mock_data.sql"/>
@@ -30,6 +30,8 @@
 	
 	<!-- Production profile -->
 	<beans profile="prod">
+		<bean class="email.BayesEmailAlgorithm"/>
+		
 		<bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 			<property name="driverClassName" value="${jdbc.driver}"/>
 		    <property name="url" value="${jdbc.url}"/>

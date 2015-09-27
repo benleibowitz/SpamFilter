@@ -23,7 +23,7 @@ public class App {
     public static void main(String[] args) {
         
         try {
-            System.getProperties().load(new FileReader("src/resources/config.properties"));
+            System.getProperties().load(new FileReader("target/classes/config.properties"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Cannot continue without loading active profile");
