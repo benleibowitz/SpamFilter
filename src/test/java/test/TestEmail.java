@@ -42,8 +42,8 @@ public class TestEmail {
                 "untz untz untz");
         Email e2 = new Email("Joe Masterson", "",
                 "Hey Frank, what time is our business meeting to discuss biznis today?");
-        assertTrue(probCalc.isSpam(e1));
         assertFalse(probCalc.isSpam(e2));
+        assertTrue(probCalc.isSpam(e1));
     }
 
 }
