@@ -19,45 +19,39 @@
  */
 package email;
 
-import java.util.List;
-
+import data.GenericWordRepository;
+import data.WordEntity;
+import data.WordRepository;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import data.Word;
-import data.WordDAO;
-
+@Setter
+@Slf4j
 public class BayesEmailAlgorithm implements SpamAlgorithm {
     private static final double BODY_WEIGHT = 0.35;
     private static final double SENDER_WEIGHT = 0.2;
     private static final double SUBJECT_WEIGHT = 0.45;
     private static final double SMOOTHING = 1;
 
-    private WordDAO wordDAO;
+    @Autowired
+    private WordRepository wordRepository;
 
     @Autowired
-    public BayesEmailAlgorithm(WordDAO wordDAO) {
-        if (wordDAO == null)
-            throw new IllegalArgumentException("Word Data Access Object cannot be null");
-
-        this.wordDAO = wordDAO;
-    }
+    private GenericWordRepository genericWordRepository;
 
     @Override
-    public boolean isSpam(Email email) {
-        if (email == null)
-            throw new IllegalArgumentException("Message cannot be null");
-
+    public boolean isSpam(@NonNull final Email email) {
         double weightedProbability = BODY_WEIGHT * processWord(email.getBody(), Email.Source.BODY) 
                 + SENDER_WEIGHT * processWord(email.getSender(), Email.Source.SENDER)
                 + SUBJECT_WEIGHT * processWord(email.getSubject(), Email.Source.SUBJECT);
 
-        System.out.println(weightedProbability);
-
+        log.info("Weighted probability: " + weightedProbability);
         return (weightedProbability > 0.5);
     }
 
-    private double processWord(String text, Email.Source source) {
-        List<Word> genericWords = wordDAO.getGenericWords();
+    private double processWord(@NonNull final String text, final Email.Source source) {
         double probabilitySpam = 0;
         double sumLogsSpam = 0;
 
@@ -74,44 +68,37 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
 
             if (i > 0) {
                 String adjacentWords = bodyWords[i - 1] + " " + bodyWords[i];
-                wordCombos = new String[] { bodyWords[i], adjacentWords };
+                wordCombos = new String[] {bodyWords[i], adjacentWords};
             }
 
             for (String wordOrPhraseString : wordCombos) {
-                //Create new word from the string we are looking at
-                Word wordOrPhrase = new Word(wordOrPhraseString);
-                
-                
-                if(!genericWords.contains(wordOrPhrase)) {
+                if(!genericWordRepository.exists(wordOrPhraseString)) {
                     //If the word is not a generic word, try and get it from the database
-                    wordOrPhrase = wordDAO.getWord(wordOrPhraseString, source);
-                    
-                    if (wordOrPhrase != null) {
+                    WordEntity wordEntity = wordRepository.findByWordAndSource(wordOrPhraseString, source);
+
+                    if (wordEntity != null) {
                         // Calculate probability of spam / real
-                        double smoothedRealCount = wordOrPhrase.getRealCount() + SMOOTHING;
-                        double smoothedSpamCount = wordOrPhrase.getSpamCount() + SMOOTHING;
+                        double smoothedRealCount = wordEntity.getRealCount() + SMOOTHING;
+                        double smoothedSpamCount = wordEntity.getSpamCount() + SMOOTHING;
                         double totalWords = smoothedRealCount + smoothedSpamCount;
                         double probSpamWord = smoothedSpamCount / totalWords;
                         double probRealWord = smoothedRealCount / totalWords;
-    
+
                         // Check threshold and add to total probability
                         if (Math.abs(0.5 - probSpamWord) > LEGITIMATE_WORD_THRESHOLD) {
-    
-                            double pSpamNumerator = probSpamWord
-                                    * PROBABILITY_SPAM_MESSAGE;
+
+                            double pSpamNumerator = probSpamWord * PROBABILITY_SPAM_MESSAGE;
                             double pDenom = (probSpamWord * PROBABILITY_SPAM_MESSAGE)
                                     + (probRealWord * (1 - PROBABILITY_SPAM_MESSAGE));
-    
-                            sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom)
-                                    - Math.log(pSpamNumerator / pDenom));
+
+                            sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom) - Math.log(pSpamNumerator / pDenom));
                         }
-                    } //close if(wordOrPhrase != null)
-                } //close if(!genericWords.contains(word)
-            } //close for loop over each word in body
+                    }
+                }
+            }
         }
 
         probabilitySpam = 1 / (1 + Math.pow(Math.E, sumLogsSpam));
-
         return probabilitySpam;
     }
 }

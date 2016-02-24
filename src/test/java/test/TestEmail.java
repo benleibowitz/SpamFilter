@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.*;
 
+import config.DevConfig;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,30 +17,14 @@ import email.Email;
 import email.ProbabilityCalculator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles(profiles="dev")
-@ContextConfiguration("classpath:emailbeans.xml")
+@ContextConfiguration(classes = {DevConfig.class})
 public class TestEmail {
-    
     @Autowired
     private ProbabilityCalculator probCalc;
-    
-    @Before
-    public void setUp() throws Exception {
-    }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @Test
-    public void testNotNull() {
-        assertNotNull(probCalc);
-    }
-    
     @Test
     public void testProbCalc() {
         Email email = new Email("Jeremy M.", "Here is the job opportunity you requested", "foo bar");
         assertTrue(probCalc.isSpam(email));
     }
-
 }

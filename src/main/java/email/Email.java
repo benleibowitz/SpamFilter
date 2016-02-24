@@ -1,19 +1,21 @@
 package email;
 
+import lombok.Getter;
+import lombok.NonNull;
+
+@Getter
 public class Email {
     public enum Source {
-        SENDER, SUBJECT, BODY
+        SENDER,
+        SUBJECT,
+        BODY
     }
     
-    private String sender;
-    private String subject;
-    private String body;
+    private final String sender;
+    private final String subject;
+    private final String body;
 
-    public Email(String sender, String subject, String body) {
-        if (body == null || sender == null || subject == null)
-            throw new IllegalArgumentException(
-                    "Message arguments cannot be null");
-
+    public Email(@NonNull String sender, @NonNull String subject, @NonNull String body) {
         this.body = processText(body);
         this.subject = processText(subject);
         this.sender = processText(sender);
@@ -42,17 +44,5 @@ public class Email {
                 .replaceAll("(?<=[a-z0-9])3(?=[a-z0-9])", "e")
                 .replaceAll("(?<=[a-z0-9])1(?=[a-z0-9])", "i")
                 .replaceAll("(?<=[a-z0-9])5(?=[a-z0-9])", "s").trim();
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public String getSubject() {
-        return subject;
     }
 }

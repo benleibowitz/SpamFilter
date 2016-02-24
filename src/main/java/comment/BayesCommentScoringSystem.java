@@ -13,6 +13,8 @@
  */
 package comment;
 
+import lombok.Data;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 public class BayesCommentScoringSystem {
     private static final String BASE_URL = "src/main/resources/";
     private static final String BODYMAP_FILE = BASE_URL + "commentBodyMap.csv";
@@ -92,7 +95,7 @@ public class BayesCommentScoringSystem {
                     BODYMAP_FILE)));
 
             // Write headers
-            bufferedWriter.write("Word,SpamMessages,RealMessages\n");
+            bufferedWriter.write("SenderWordEntity,SpamMessages,RealMessages\n");
 
             for (String w : trainingCountMap.keySet()) {
 
@@ -113,17 +116,4 @@ public class BayesCommentScoringSystem {
         }
 
     }
-
-    public void setBodyProbabilityMap(Map<String, double[]> bodyProbabilityMap) {
-        this.bodyProbabilityMap = bodyProbabilityMap;
-    }
-
-    public Map<String, double[]> getBodyProbabilityMap() {
-        return bodyProbabilityMap;
-    }
-
-    public Map<String, double[]> getTrainingCountMap() {
-        return trainingCountMap;
-    }
-
 }

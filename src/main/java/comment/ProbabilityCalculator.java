@@ -1,20 +1,15 @@
 package comment;
 
+import lombok.NonNull;
+
 public class ProbabilityCalculator {
     private SpamAlgorithm algorithm;
 
-    public ProbabilityCalculator(SpamAlgorithm algorithm) {
-        if (algorithm == null)
-            throw new IllegalArgumentException(
-                    "ProbabilityCalculator arguments cannot be null");
-
+    public ProbabilityCalculator(@NonNull SpamAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
 
-    public boolean isSpam(Comment comment) {
-        if (comment == null)
-            throw new IllegalArgumentException("Message cannot be null");
-
+    public boolean isSpam(@NonNull Comment comment) {
         return algorithm.isSpam(comment);
     }
 }

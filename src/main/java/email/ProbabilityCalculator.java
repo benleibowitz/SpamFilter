@@ -1,24 +1,15 @@
 package email;
 
+import lombok.NonNull;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+@Setter
 public class ProbabilityCalculator {
+    @Autowired
     private SpamAlgorithm algorithm;
 
-    @Autowired
-    public ProbabilityCalculator(SpamAlgorithm algorithm) {
-        if (algorithm == null)
-            throw new IllegalArgumentException(
-                    "ProbabilityCalculator arguments cannot be null");
-
-        this.algorithm = algorithm;
-    }
-
-    public boolean isSpam(Email email) {
-        if (email == null)
-            throw new IllegalArgumentException("Message cannot be null");
-
+    public boolean isSpam(@NonNull Email email) {
         return algorithm.isSpam(email);
     }
 }

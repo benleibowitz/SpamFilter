@@ -1,15 +1,13 @@
 package comment;
 
+import lombok.NonNull;
+
 import java.util.Map;
 
 public class BayesCommentProbabilityTrainer implements ProbabilityTrainer {
     private BayesCommentScoringSystem scoringSystem;
 
-    public BayesCommentProbabilityTrainer(
-            BayesCommentScoringSystem scoringSystem) {
-        if (scoringSystem == null)
-            throw new IllegalArgumentException("Scoring system cannot be null");
-
+    public BayesCommentProbabilityTrainer(@NonNull BayesCommentScoringSystem scoringSystem) {
         this.scoringSystem = scoringSystem;
     }
 
@@ -19,10 +17,7 @@ public class BayesCommentProbabilityTrainer implements ProbabilityTrainer {
     }
 
     @Override
-    public void train(Comment comment, boolean spam) {
-        if (comment == null)
-            throw new IllegalArgumentException("Message cannot be null");
-
+    public void train(@NonNull Comment comment, boolean spam) {
         train(comment.getBody(), spam, scoringSystem.getTrainingCountMap());
     }
 
@@ -35,11 +30,12 @@ public class BayesCommentProbabilityTrainer implements ProbabilityTrainer {
             // previous word)
             String[] wordOrPhrase;
 
-            if (i == 0)
-                wordOrPhrase = new String[] { words[i] };
-            else
-                wordOrPhrase = new String[] { words[i],
-                        words[i - 1] + " " + words[i] };
+            if (i == 0) {
+                wordOrPhrase = new String[]{words[i]};
+            } else {
+                wordOrPhrase = new String[]{words[i],
+                        words[i - 1] + " " + words[i]};
+            }
 
             for (String word : wordOrPhrase) {
                 double[] probs;
@@ -48,14 +44,15 @@ public class BayesCommentProbabilityTrainer implements ProbabilityTrainer {
                     // If word found in map, increment existing array
                     probs = probabilityMap.get(word);
                 } else {
-                    // Word is not in map. Add it
+                    // SenderWordEntity is not in map. Add it
                     probs = new double[] { 0, 0 };
                 }
 
-                if (spam)
+                if (spam) {
                     probs[0] += 1;
-                else
+                } else {
                     probs[1] += 1;
+                }
 
                 probabilityMap.put(word, probs);
             }

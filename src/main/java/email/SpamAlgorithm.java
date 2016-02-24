@@ -10,11 +10,11 @@ public interface SpamAlgorithm {
      * LEGITIMATE_WORD_THRESHOLD=0.2, word will be used if probability spam of a
      * given word is < .3 or > .7
      */
-    static final double LEGITIMATE_WORD_THRESHOLD = 0.35;
+    double LEGITIMATE_WORD_THRESHOLD = 0.35;
 
     // The probability that any message is spam
     // (statistics say it's anywhere from 0.5 to 0.8)
-    static final double PROBABILITY_SPAM_MESSAGE = 0.5;
+    double PROBABILITY_SPAM_MESSAGE = 0.5;
 
-    public boolean isSpam(Email email);
+    boolean isSpam(final Email email);
 }

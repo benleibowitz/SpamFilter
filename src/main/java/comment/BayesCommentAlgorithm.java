@@ -19,34 +19,29 @@
  */
 package comment;
 
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map;
 
+@Slf4j
 public class BayesCommentAlgorithm implements SpamAlgorithm {
     private static final double LEGITIMATE_WORD_THRESHOLD = 0.35;
     private static final double PROBABILITY_SPAM_MESSAGE = 0.3;
 
     private BayesCommentScoringSystem scoringSystem;
 
-    public BayesCommentAlgorithm(BayesCommentScoringSystem scoringSystem) {
-        if (scoringSystem == null)
-            throw new IllegalArgumentException("Scoring system cannot be null");
-
+    public BayesCommentAlgorithm(@NonNull BayesCommentScoringSystem scoringSystem) {
         this.scoringSystem = scoringSystem;
     }
 
     @Override
-    public boolean isSpam(Comment comment) {
-        if (comment == null)
-            throw new IllegalArgumentException("Message cannot be null");
-
+    public boolean isSpam(@NonNull Comment comment) {
         double weightedProbability = processText(comment.getBody(),
                 scoringSystem.getBodyProbabilityMap());
 
-        System.out.println(weightedProbability);
-        if (weightedProbability > 0.5)
-            return true;
-        else
-            return false;
+        log.info("Weighted probability: " + weightedProbability);
+        return weightedProbability > 0.5;
     }
 
     private double processText(String text, Map<String, double[]> probabilityMap) {
@@ -79,18 +74,18 @@ public class BayesCommentAlgorithm implements SpamAlgorithm {
 
                         // Don't want 0 numerator, as Math.log(0) returns
                         // negative infinity.
-                        if (probSpamWord == 0)
+                        if (probSpamWord == 0) {
                             probSpamWord = 0.05;
-                        if (probRealWord == 0)
+                        }
+                        if (probRealWord == 0) {
                             probRealWord = 0.05;
+                        }
 
-                        double pSpamNumerator = probSpamWord
-                                * PROBABILITY_SPAM_MESSAGE;
+                        double pSpamNumerator = probSpamWord * PROBABILITY_SPAM_MESSAGE;
                         double pDenom = (probSpamWord * PROBABILITY_SPAM_MESSAGE)
                                 + (probRealWord * (1 - PROBABILITY_SPAM_MESSAGE));
 
-                        sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom) - Math
-                                .log(pSpamNumerator / pDenom));
+                        sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom) - Math.log(pSpamNumerator / pDenom));
                     }
                 }
             }

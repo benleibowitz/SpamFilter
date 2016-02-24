@@ -1,5 +1,8 @@
 package comment;
 
+import lombok.Getter;
+
+@Getter
 public class Comment {
     private String body;
 
@@ -21,9 +24,5 @@ public class Comment {
         return text.toLowerCase().replace("-", " ").replaceAll("[.]{1,}", " ")
                 .replaceAll("<br>|[^\\w^\\s]|_", "")
                 .replaceAll("[\\s]{2,}", " ").trim();
-    }
-
-    public String getBody() {
-        return body;
     }
 }
