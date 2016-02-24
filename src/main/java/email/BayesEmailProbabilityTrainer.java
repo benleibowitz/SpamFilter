@@ -58,9 +58,9 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
                     }
                     
                     if(spam)
-                        word.setSpamCount(word.getSpamCount() + 1);
+                        word.incrementSpamCount();
                     else
-                        word.setRealCount(word.getRealCount() + 1);
+                        word.incrementRealCount();
                     
                     if(shouldInsertNewWord)
                         wordDAO.insert(word, source);

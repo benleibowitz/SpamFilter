@@ -30,6 +30,7 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
     private static final double BODY_WEIGHT = 0.35;
     private static final double SENDER_WEIGHT = 0.2;
     private static final double SUBJECT_WEIGHT = 0.45;
+    private static final double SMOOTHING = 1;
 
     private WordDAO wordDAO;
 
@@ -87,19 +88,14 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
                     
                     if (wordOrPhrase != null) {
                         // Calculate probability of spam / real
-                        int totalWords = wordOrPhrase.getRealCount() + wordOrPhrase.getSpamCount();
-                        double probSpamWord = (double) wordOrPhrase.getSpamCount() / totalWords;
-                        double probRealWord = (double) wordOrPhrase.getRealCount() / totalWords;
+                        double smoothedRealCount = wordOrPhrase.getRealCount() + SMOOTHING;
+                        double smoothedSpamCount = wordOrPhrase.getSpamCount() + SMOOTHING;
+                        double totalWords = smoothedRealCount + smoothedSpamCount;
+                        double probSpamWord = smoothedSpamCount / totalWords;
+                        double probRealWord = smoothedRealCount / totalWords;
     
                         // Check threshold and add to total probability
                         if (Math.abs(0.5 - probSpamWord) > LEGITIMATE_WORD_THRESHOLD) {
-
-                            // Don't want 0 numerator, as Math.log(0) returns
-                            // negative infinity.
-                            if (probSpamWord == 0)
-                                probSpamWord = 0.05;
-                            if (probRealWord == 0)
-                                probRealWord = 0.05;
     
                             double pSpamNumerator = probSpamWord
                                     * PROBABILITY_SPAM_MESSAGE;

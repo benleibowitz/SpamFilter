@@ -38,12 +38,8 @@ public class TestEmail {
     
     @Test
     public void testProbCalc() {
-        Email e1 = new Email("Frank McJohnson", "Here is the job opportunity you requested",
-                "untz untz untz");
-        Email e2 = new Email("Joe Masterson", "",
-                "Hey Frank, what time is our business meeting to discuss biznis today?");
-        assertFalse(probCalc.isSpam(e2));
-        assertTrue(probCalc.isSpam(e1));
+        Email email = new Email("Jeremy M.", "Here is the job opportunity you requested", "foo bar");
+        assertTrue(probCalc.isSpam(email));
     }
 
 }

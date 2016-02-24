@@ -22,6 +22,12 @@ public class Word {
     public int getRealCount() {
         return realCount;
     }
+    public int incrementRealCount() {
+        return ++realCount;
+    }
+    public int incrementSpamCount() {
+        return ++spamCount;
+    }
     public void setRealCount(int realCount) {
         this.realCount = realCount;
     }
