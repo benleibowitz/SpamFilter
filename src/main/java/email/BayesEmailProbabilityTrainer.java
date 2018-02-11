@@ -1,12 +1,20 @@
 package email;
 
+import data.GenericWordRepository;
+import data.WordEntity;
 import data.WordRepository;
 import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 @Setter
 public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
+    @Autowired
+    private GenericWordRepository genericWordRepository;
+
     @Autowired
     private WordRepository wordRepository;
 
@@ -18,48 +26,36 @@ public class BayesEmailProbabilityTrainer implements ProbabilityTrainer {
     }
 
     private void train(String text, boolean spam, Email.Source source) {
-//        List<SenderWordEntity> genericWords = wordRepository.getGenericWords();
-//
-//        String[] wordsInText = text.split(" ");
-//        for (int i = 0; i < wordsInText.length; i++) {
-//
-//            // Setup String[] with current word, and combo of (previous word +
-//            // current word)
-//            String[] wordOrPhrase;
-//
-//            if (i == 0)
-//                wordOrPhrase = new String[] { wordsInText[i] };
-//            else
-//                wordOrPhrase = new String[] { wordsInText[i],
-//                        wordsInText[i - 1] + " " + wordsInText[i] };
-//
-//
-//            for (String wordString : wordOrPhrase) {
-//                SenderWordEntity word = new SenderWordEntity(wordString);
-//
-//                if(!genericWords.contains(word)) {
-//                    boolean shouldInsertNewWord = false;
-//
-//                    word = wordRepository.getWord(wordString, source);
-//                    if(word == null) {
-//                        word = new SenderWordEntity(wordString);
-//                        shouldInsertNewWord = true;
-//                    }
-//
-//                    if(spam) {
-//                        word.incrementSpamCount();
-//                    } else {
-//                        word.incrementRealCount();
-//                    }
-//
-//                    if(shouldInsertNewWord) {
-//                        wordRepository.insert(word, source);
-//                    } else {
-//                        wordRepository.update(word, source);
-//                    }
-//                }
-//
-//            }
-//        }
+        String[] wordsInText = text.split(" ");
+
+        for (int i = 0; i < wordsInText.length; i++) {
+
+            // Setup String[] with current word, and combo of (previous word +
+            // current word)
+            String[] wordOrPhrase;
+
+            if (i == 0) {
+                wordOrPhrase = new String[]{wordsInText[i]};
+            } else {
+                wordOrPhrase = new String[]{wordsInText[i], wordsInText[i - 1] + " " + wordsInText[i]};
+            }
+
+            Arrays.stream(wordOrPhrase)
+                    .forEach(word -> {
+                        if (!genericWordRepository.existsById(word)) {
+                            WordEntity wordEntity = wordRepository.findById(new WordEntity.WordEntityPrimaryKey(word, source))
+                                    .orElse(WordEntity.builder()
+                                            .word(word)
+                                            .source(source)
+                                            .build());
+                            if (spam) {
+                                wordEntity.incrementSpamCount();
+                            } else {
+                                wordEntity.incrementRealCount();
+                            }
+                            wordRepository.saveAndFlush(wordEntity);
+                        }
+                    });
+        }
     }
 }

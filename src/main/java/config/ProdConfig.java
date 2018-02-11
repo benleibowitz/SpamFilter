@@ -5,12 +5,13 @@ import email.BayesEmailProbabilityTrainer;
 import email.ProbabilityCalculator;
 import email.ProbabilityTrainer;
 import email.SpamAlgorithm;
-import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -20,13 +21,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
-
 @Configuration
 @ComponentScan("data")
 @EnableJpaRepositories("data")
 @EnableTransactionManagement
-public class DevConfig {
+public class ProdConfig {
     @Bean
     public ProbabilityTrainer trainer() {
         return new BayesEmailProbabilityTrainer();
@@ -43,6 +42,19 @@ public class DevConfig {
     }
 
     @Bean
+    public DataSource dataSource(@Value("jdbc.driver") String driver,
+                                 @Value("jdbc.url") String url,
+                                 @Value("jdbc.username") String user,
+                                 @Value("jdbc.password") String pass) {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driver);
+        dataSource.setUrl(url);
+        dataSource.setUsername(user);
+        dataSource.setPassword(pass);
+        return dataSource;
+    }
+
+    @Bean
     public EntityManagerFactory entityManagerFactory() {
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
@@ -50,21 +62,9 @@ public class DevConfig {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("data");
-        factory.setPersistenceProvider(new HibernatePersistenceProvider());
-        factory.setDataSource(dataSource());
         factory.afterPropertiesSet();
 
         return factory.getObject();
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder
-                .setType(H2)
-                .addScript("schema.sql")
-                .addScript("mock_data.sql")
-                .build();
     }
 
     @Bean

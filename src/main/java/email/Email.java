@@ -10,7 +10,7 @@ public class Email {
         SUBJECT,
         BODY
     }
-    
+
     private final String sender;
     private final String subject;
     private final String body;

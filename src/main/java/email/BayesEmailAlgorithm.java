@@ -27,6 +27,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+
 @Setter
 @Slf4j
 public class BayesEmailAlgorithm implements SpamAlgorithm {
@@ -43,16 +45,18 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
 
     @Override
     public boolean isSpam(@NonNull final Email email) {
-        double weightedProbability = BODY_WEIGHT * processWord(email.getBody(), Email.Source.BODY) 
+        double weightedProbability = BODY_WEIGHT * processWord(email.getBody(), Email.Source.BODY)
                 + SENDER_WEIGHT * processWord(email.getSender(), Email.Source.SENDER)
                 + SUBJECT_WEIGHT * processWord(email.getSubject(), Email.Source.SUBJECT);
 
-        log.info("Weighted probability: " + weightedProbability);
+        log.debug("Weighted spam probability: " + weightedProbability);
         return (weightedProbability > 0.5);
     }
 
     private double processWord(@NonNull final String text, final Email.Source source) {
-        double probabilitySpam = 0;
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Processing text [%s] from source [%s]", text, source.name()));
+        }
         double sumLogsSpam = 0;
 
         String[] bodyWords = text.split(" ");
@@ -64,41 +68,46 @@ public class BayesEmailAlgorithm implements SpamAlgorithm {
          * P(S|"here") and P(S|"click here")
          */
         for (int i = 0; i < bodyWords.length; i++) {
-            String[] wordCombos = new String[] { bodyWords[i] };
+            String[] wordCombos = new String[]{bodyWords[i]};
 
             if (i > 0) {
                 String adjacentWords = bodyWords[i - 1] + " " + bodyWords[i];
-                wordCombos = new String[] {bodyWords[i], adjacentWords};
+                wordCombos = new String[]{bodyWords[i], adjacentWords};
             }
 
-            for (String wordOrPhraseString : wordCombos) {
-                if(!genericWordRepository.exists(wordOrPhraseString)) {
-                    //If the word is not a generic word, try and get it from the database
-                    WordEntity wordEntity = wordRepository.findByWordAndSource(wordOrPhraseString, source);
-
-                    if (wordEntity != null) {
-                        // Calculate probability of spam / real
-                        double smoothedRealCount = wordEntity.getRealCount() + SMOOTHING;
-                        double smoothedSpamCount = wordEntity.getSpamCount() + SMOOTHING;
-                        double totalWords = smoothedRealCount + smoothedSpamCount;
-                        double probSpamWord = smoothedSpamCount / totalWords;
-                        double probRealWord = smoothedRealCount / totalWords;
-
-                        // Check threshold and add to total probability
-                        if (Math.abs(0.5 - probSpamWord) > LEGITIMATE_WORD_THRESHOLD) {
-
-                            double pSpamNumerator = probSpamWord * PROBABILITY_SPAM_MESSAGE;
-                            double pDenom = (probSpamWord * PROBABILITY_SPAM_MESSAGE)
-                                    + (probRealWord * (1 - PROBABILITY_SPAM_MESSAGE));
-
-                            sumLogsSpam += (Math.log(1 - pSpamNumerator / pDenom) - Math.log(pSpamNumerator / pDenom));
-                        }
-                    }
-                }
-            }
+            double sumLogs = Arrays.stream(wordCombos)
+                    .filter(w -> !genericWordRepository.existsById(w))
+                    .map(wordOrPhrase -> wordRepository.findById(new WordEntity.WordEntityPrimaryKey(wordOrPhrase, source))
+                            .map(this::calculateLog)
+                            .orElse(0.0))
+                    .mapToDouble(Double::valueOf)
+                    .sum();
+            sumLogsSpam += sumLogs;
         }
 
-        probabilitySpam = 1 / (1 + Math.pow(Math.E, sumLogsSpam));
-        return probabilitySpam;
+        double probSpam = 1 / (1 + Math.pow(Math.E, sumLogsSpam));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Probability spam [%.5f] from source [%s]", probSpam, source.name()));
+        }
+        return probSpam;
+    }
+
+    private double calculateLog(WordEntity wordEntity) {
+        double smoothedRealCount = wordEntity.getRealCount() + SMOOTHING;
+        double smoothedSpamCount = wordEntity.getSpamCount() + SMOOTHING;
+        double totalWords = smoothedRealCount + smoothedSpamCount;
+        double probSpamWord = smoothedSpamCount / totalWords;
+        double probRealWord = smoothedRealCount / totalWords;
+
+        // Check threshold and add to total probability
+        if (Math.abs(0.5 - probSpamWord) > LEGITIMATE_WORD_THRESHOLD) {
+
+            double pSpamNumerator = probSpamWord * PROBABILITY_SPAM_MESSAGE;
+            double pDenom = (probSpamWord * PROBABILITY_SPAM_MESSAGE)
+                    + (probRealWord * (1 - PROBABILITY_SPAM_MESSAGE));
+
+            return (Math.log(1 - pSpamNumerator / pDenom) - Math.log(pSpamNumerator / pDenom));
+        }
+        return 0;
     }
 }
